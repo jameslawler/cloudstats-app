@@ -9,13 +9,22 @@ const pixel = Uint8Array.from(atob('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwC
 );
 
 const getRefererDomain = (referer?: string | null): string => {
+	const redundantSubDomains = ['s.', 'www.'];
+
 	if (!referer) {
 		return 'none';
 	}
 
 	try {
 		const url = new URL(referer);
-		return url.hostname.startsWith('www.') ? url.hostname.slice(4) : url.hostname;
+
+		for (let subDomain of redundantSubDomains) {
+			if (url.hostname.startsWith(subDomain)) {
+				return url.hostname.slice(subDomain.length);
+			}
+		}
+
+		return url.hostname;
 	} catch {
 		return 'none';
 	}

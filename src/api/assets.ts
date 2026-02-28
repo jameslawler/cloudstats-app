@@ -18,7 +18,7 @@ const getRefererDomain = (referer?: string | null): string => {
 	try {
 		const url = new URL(referer);
 
-		for (let subDomain of redundantSubDomains) {
+		for (const subDomain of redundantSubDomains) {
 			if (url.hostname.startsWith(subDomain)) {
 				return url.hostname.slice(subDomain.length);
 			}
@@ -49,8 +49,8 @@ app.get('/site/:actionName/image.png', async (c) => {
 
 	const actionName = c.req.param('actionName');
 	const source = c.req.query('s') ?? 'none';
-	const countryCode = c.req.header()['CF-IPCountry'] ?? 'none';
-	const referer = c.req.header()['referer'] ?? 'none';
+	const countryCode = c.req.header('cf-ipcountry')?.toLowerCase() ?? 'none';
+	const referer = c.req.header('referer') ?? 'none';
 
 	const refererDomain = getRefererDomain(referer);
 	const actionValue = getRefererWithoutQuery(referer);
@@ -83,8 +83,8 @@ app.get('/site/image.png', async (c) => {
 	const siteIds = JSON.parse(c.env.SITE_IDS) as string[];
 
 	const source = c.req.query('s') ?? 'none';
-	const countryCode = c.req.header()['CF-IPCountry'] ?? 'none';
-	const referer = c.req.header()['referer'] ?? 'none';
+	const countryCode = c.req.header('cf-ipcountry')?.toLowerCase() ?? 'none';
+	const referer = c.req.header('referer') ?? 'none';
 
 	const refererDomain = getRefererDomain(referer);
 

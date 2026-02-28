@@ -20,6 +20,6 @@
 		}
 	],
 	"vars": {
-		"SITE_IDS": "['portuguesefromportugal.com','jameslawler.com']"
+		"SITE_IDS": "[\"portuguesefromportugal.com\",\"jameslawler.com\"]"
 	}
 }

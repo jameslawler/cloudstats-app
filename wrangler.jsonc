@@ -18,5 +18,8 @@
 			"database_name": "cloudstats",
 			"database_id": "e88153a6-0066-4099-ae59-2dee5ef9b1a1"
 		}
-	]
+	],
+	"vars": {
+		"SITE_IDS": "['portuguesefromportugal.com','jameslawler.com']"
+	}
 }

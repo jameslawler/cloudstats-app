@@ -32,7 +32,7 @@ const cloudStatsJS = `class CloudStats extends HTMLElement {
 		const img = document.createElement('img');
 		img.src = action
 			? \`\${domain}/assets/site/\${action}/image.png?h=\${hash}\${source ? \`&s=\${source}\` : ''}\`
-			: \`\${domain}/assets/site/image.png?h=\${hash}\${source ? \`&s=\${source}\` : ''}\`;
+			: \`\${domain}/assets/site/image.png\${source ? \`?s=\${source}\` : ''}\`;
 		img.width = 1;
 		img.height = 1;
 		this.appendChild(img);

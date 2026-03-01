@@ -58,6 +58,7 @@ app.get('/site/:actionName/image.png', async (c) => {
 	if (actionValue === 'none' || !siteIds.includes(refererDomain.toLowerCase())) {
 		return new Response(pixel, {
 			headers: {
+				'Access-Control-Allow-Origin': '*',
 				'Content-Type': 'image/png',
 				'Content-Length': pixel.length.toString(),
 				'Cache-Control': 'public, max-age=60',
@@ -71,6 +72,7 @@ app.get('/site/:actionName/image.png', async (c) => {
 
 	return new Response(pixel, {
 		headers: {
+			'Access-Control-Allow-Origin': '*',
 			'Content-Type': 'image/png',
 			'Content-Length': pixel.length.toString(),
 			'Cache-Control': 'public, max-age=60',
@@ -91,6 +93,7 @@ app.get('/site/image.png', async (c) => {
 	if (!siteIds.includes(refererDomain.toLowerCase())) {
 		return new Response(pixel, {
 			headers: {
+				'Access-Control-Allow-Origin': '*',
 				'Content-Type': 'image/png',
 				'Content-Length': pixel.length.toString(),
 				'Cache-Control': 'public, max-age=60',
@@ -104,6 +107,7 @@ app.get('/site/image.png', async (c) => {
 
 	return new Response(pixel, {
 		headers: {
+			'Access-Control-Allow-Origin': '*',
 			'Content-Type': 'image/png',
 			'Content-Length': pixel.length.toString(),
 			'Cache-Control': 'public, max-age=60',

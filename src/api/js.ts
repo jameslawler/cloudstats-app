@@ -26,12 +26,13 @@ const cloudStatsJS = `class CloudStats extends HTMLElement {
 
 	connectedCallback() {
 		const action = this.getAttribute('action');
+    const domain = this.getAttribute('domain');
 		const source = this.getRefererDomain();
 		const hash = this.getCurrentUrlHash();
 		const img = document.createElement('img');
 		img.src = action
-			? \`/assets/site/\${action}/image.png?h=\${hash}\${source ? \`&s=\${source}\` : ''}\`
-			: \`/assets/site/image.png?h=\${hash}\${source ? \`&s=\${source}\` : ''}\`;
+			? \`\${domain}/assets/site/\${action}/image.png?h=\${hash}\${source ? \`&s=\${source}\` : ''}\`
+			: \`\${domain}/assets/site/image.png?h=\${hash}\${source ? \`&s=\${source}\` : ''}\`;
 		img.width = 1;
 		img.height = 1;
 		this.appendChild(img);

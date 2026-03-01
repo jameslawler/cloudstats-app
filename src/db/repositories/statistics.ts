@@ -19,11 +19,13 @@ export const incrementStatistic = async (
 	const year = now.getFullYear();
 	const month = now.toLocaleString('en-US', { month: 'short' }).toLowerCase();
 
+	refererDomain = refererDomain.replaceAll('.', '_');
+
 	const overallCountsYearPath = `$.years.${year}.months.${month}`;
 	const countryCountsTotalPath = `$.${countryCode}.total`;
 	const countryCountsYearPath = `$.${countryCode}.years.${year}.months.${month}`;
-	const refererCountsTotalPath = `$.'${refererDomain}'.total`;
-	const refererCountsYearPath = `$.'${refererDomain}'.years.${year}.months.${month}`;
+	const refererCountsTotalPath = `$.${refererDomain}.total`;
+	const refererCountsYearPath = `$.${refererDomain}.years.${year}.months.${month}`;
 
 	const insertJson = {
 		total: 1,

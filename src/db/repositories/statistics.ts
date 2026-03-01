@@ -22,8 +22,8 @@ export const incrementStatistic = async (
 	const overallCountsYearPath = `$.years.${year}.months.${month}`;
 	const countryCountsTotalPath = `$.${countryCode}.total`;
 	const countryCountsYearPath = `$.${countryCode}.years.${year}.months.${month}`;
-	const refererCountsTotalPath = `$.${refererDomain}.total`;
-	const refererCountsYearPath = `$.${refererDomain}.years.${year}.months.${month}`;
+	const refererCountsTotalPath = `$.'${refererDomain}'.total`;
+	const refererCountsYearPath = `$.'${refererDomain}'.years.${year}.months.${month}`;
 
 	const insertJson = {
 		total: 1,

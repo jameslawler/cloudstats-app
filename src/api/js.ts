@@ -42,6 +42,7 @@ customElements.define('cloud-stats', CloudStats);`;
 app.get('/cloudstats.webcomponent.js', (c) => {
 	return c.text(cloudStatsJS, 200, {
 		'Access-Control-Allow-Origin': '*',
+		'Content-Type': 'application/javascript',
 	});
 });
 

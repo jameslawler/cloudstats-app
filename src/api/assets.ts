@@ -109,7 +109,7 @@ app.get('/site/image.png', async (c) => {
 			'Access-Control-Allow-Origin': '*',
 			'Content-Type': 'image/png',
 			'Content-Length': pixel.length.toString(),
-			'Cache-Control': 'public, max-age=60',
+			'Cache-Control': 'public, max-age=3600',
 		},
 	});
 });

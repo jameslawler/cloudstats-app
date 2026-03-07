@@ -14,23 +14,14 @@ const cloudStatsJS = (domain: string) => `class CloudStats extends HTMLElement {
 		catch { return null; }
 	}
 
-	getCurrentUrlHash() {
-		const url = window.location.origin + window.location.pathname;
-		let hash = 0x811c9dc5;
-		for (let i = 0; i < url.length; i++) {
-			hash ^= url.charCodeAt(i);
-			hash = Math.imul(hash, 0x01000193);
-		}
-		return (hash >>> 0).toString(16);
-	}
-
 	connectedCallback() {
 		const action = this.getAttribute('action');
 		const source = this.getRefererDomain();
-		const hash = this.getCurrentUrlHash();
 		const img = document.createElement('img');
-		img.src = action
-			? \`${domain}/assets/site/\${action}/image.png?h=\${hash}\${source ? \`&s=\${source}\` : ''}\`
+    const pageUrl = encodeURIComponent(window.location.origin + window.location.pathname);
+
+    img.src = action
+			? \`${domain}/assets/site/\${action}/image.png?u=\${pageUrl}\${source ? \`&s=\${source}\` : ''}\`
 			: \`${domain}/assets/site/image.png\${source ? \`?s=\${source}\` : ''}\`;
 		img.width = 1;
 		img.height = 1;

@@ -49,11 +49,10 @@ app.get('/site/:actionName/image.png', async (c) => {
 
 	const actionName = c.req.param('actionName');
 	const source = c.req.query('s') ?? 'none';
+	const actionValue = c.req.query('u') ?? 'none';
 	const countryCode = c.req.header('cf-ipcountry')?.toLowerCase() ?? 'none';
 	const referer = c.req.header('referer') ?? 'none';
-
 	const refererDomain = getRefererDomain(referer);
-	const actionValue = getRefererWithoutQuery(referer);
 
 	if (actionValue === 'none' || !siteIds.includes(refererDomain.toLowerCase())) {
 		return new Response(pixel, {

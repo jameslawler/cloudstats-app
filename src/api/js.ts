@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 
 const app = new Hono<{ Bindings: Env }>();
 
-const cloudStatsJS = `class CloudStats extends HTMLElement {
+const cloudStatsJS = (domain: string) => `class CloudStats extends HTMLElement {
 	constructor() {
 		super();
 	}
@@ -26,13 +26,12 @@ const cloudStatsJS = `class CloudStats extends HTMLElement {
 
 	connectedCallback() {
 		const action = this.getAttribute('action');
-    const domain = this.getAttribute('domain');
 		const source = this.getRefererDomain();
 		const hash = this.getCurrentUrlHash();
 		const img = document.createElement('img');
 		img.src = action
-			? \`\${domain}/assets/site/\${action}/image.png?h=\${hash}\${source ? \`&s=\${source}\` : ''}\`
-			: \`\${domain}/assets/site/image.png\${source ? \`?s=\${source}\` : ''}\`;
+			? \`${domain}/assets/site/\${action}/image.png?h=\${hash}\${source ? \`&s=\${source}\` : ''}\`
+			: \`${domain}/assets/site/image.png\${source ? \`?s=\${source}\` : ''}\`;
 		img.width = 1;
 		img.height = 1;
 		this.appendChild(img);
@@ -41,7 +40,10 @@ const cloudStatsJS = `class CloudStats extends HTMLElement {
 customElements.define('cloud-stats', CloudStats);`;
 
 app.get('/cloudstats.webcomponent.js', (c) => {
-	return c.text(cloudStatsJS, 200, {
+	const url = new URL(c.req.url);
+	const domain = url.origin;
+
+	return c.text(cloudStatsJS(domain), 200, {
 		'Access-Control-Allow-Origin': '*',
 		'Content-Type': 'application/javascript',
 	});

@@ -9,7 +9,7 @@ app.post('/', async (c) => {
 	const data = await c.req.json();
 	const siteIds = JSON.parse(c.env.SITE_IDS) as string[];
 	const { siteId, actionName, actionValue, countryCode, source } = data;
-	const apiSecret = c.req.header('x-api-key') ?? 'none';
+	const apiSecret = c.req.header('x-api-secret') ?? 'none';
 
 	if (apiSecret !== c.env.EVENT_SECRET) {
 		return c.body(null, 401);

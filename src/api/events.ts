@@ -9,9 +9,10 @@ app.post('/', async (c) => {
 	const data = await c.req.json();
 	const siteIds = JSON.parse(c.env.SITE_IDS) as string[];
 	const { siteId, actionName, actionValue, countryCode, source } = data;
+	const apiSecret = c.header('x-api-secret') ?? 'none';
 
-	if (c.header('x-api-secret') ?? '' !== c.env.EVENT_SECRET) {
-		console.log('Bad auth: ', c.header('x-api-secret'));
+	if (apiSecret !== c.env.EVENT_SECRET) {
+		console.log('Bad auth: ', apiSecret);
 		return c.body(null, 401);
 	}
 

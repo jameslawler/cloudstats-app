@@ -10,8 +10,7 @@ app.post('/', async (c) => {
 	const siteIds = JSON.parse(c.env.SITE_IDS) as string[];
 	const { siteId, actionName, actionValue, countryCode, source } = data;
 
-	if (c.header('authorization') ?? '' !== c.env.EVENT_SECRET) {
-		console.log('Bad auth', c.header('authorization'));
+	if (c.header('x-api-secret') ?? '' !== c.env.EVENT_SECRET) {
 		return c.body(null, 401);
 	}
 

@@ -11,6 +11,7 @@ app.post('/', async (c) => {
 	const { siteId, actionName, actionValue, countryCode, source } = data;
 
 	if (c.header('x-api-secret') ?? '' !== c.env.EVENT_SECRET) {
+		console.log('Bad auth: ', c.header('x-api-secret'));
 		return c.body(null, 401);
 	}
 

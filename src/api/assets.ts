@@ -4,7 +4,7 @@ import { incrementStatistic } from '../db/repositories/statistics';
 
 const app = new Hono<{ Bindings: Env }>();
 
-const pixel = Uint8Array.from(atob('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wIAAgUBAcxVYwAAAABJRU5ErkJggg=='), (c) =>
+const pixel = Uint8Array.from(atob('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Xw8AAoMBgDTD2qgAAAAASUVORK5CYII='), (c) =>
 	c.charCodeAt(0),
 );
 

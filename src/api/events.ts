@@ -12,6 +12,7 @@ app.post('/', async (c) => {
 	const apiSecret = c.header('x-api-key') ?? 'none';
 
 	console.log('headers', JSON.stringify(Object.fromEntries(c.req.raw.headers)));
+	console.log('api: ', c.header('x-api-key'));
 
 	if (apiSecret !== c.env.EVENT_SECRET) {
 		console.log('Bad auth: ', apiSecret);

@@ -20,6 +20,7 @@
 		}
 	],
 	"vars": {
-		"SITE_IDS": "[\"portuguesefromportugal.com\",\"jameslawler.com\"]"
+		"SITE_IDS": "[\"portuguesefromportugal.com\",\"jameslawler.com\"]",
+		"EVENT_SECRET": "abc123"
 	}
 }

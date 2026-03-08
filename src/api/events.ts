@@ -10,6 +10,10 @@ app.post('/', async (c) => {
 	const siteIds = JSON.parse(c.env.SITE_IDS) as string[];
 	const { siteId, actionName, actionValue, countryCode, source } = data;
 
+	if (c.header('authorization') ?? '' !== c.env.EVENT_SECRET) {
+		return c.body(null, 401);
+	}
+
 	if (!siteIds.includes(siteId.toLowerCase())) {
 		return c.body(null, 400);
 	}

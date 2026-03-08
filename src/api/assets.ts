@@ -30,19 +30,6 @@ const getRefererDomain = (referer?: string | null): string => {
 	}
 };
 
-const getRefererWithoutQuery = (referer?: string | null): string => {
-	if (!referer) {
-		return 'none';
-	}
-
-	try {
-		const url = new URL(referer);
-		return `${url.protocol}//${url.hostname}${url.port ? `:${url.port}` : ''}${url.pathname}`;
-	} catch {
-		return 'none';
-	}
-};
-
 app.get('/site/:actionName/image.png', async (c) => {
 	const db = getDb(c.env.DB);
 	const siteIds = JSON.parse(c.env.SITE_IDS) as string[];

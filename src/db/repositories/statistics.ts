@@ -2,9 +2,10 @@ import { DrizzleClient } from '..';
 
 import * as schema from '../schema';
 import { StatisticType } from '../../types/statistic';
-import { sql } from 'drizzle-orm';
+import { sql, eq } from 'drizzle-orm';
 
-export const getStatistics = async (db: DrizzleClient) => db.select().from(schema.statistics).all();
+export const getStatistics = async (db: DrizzleClient, siteId: string) =>
+	db.select().from(schema.statistics).where(eq(schema.statistics.siteId, siteId)).all();
 
 export const incrementStatistic = async (
 	db: DrizzleClient,

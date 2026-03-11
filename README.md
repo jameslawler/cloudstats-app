@@ -62,7 +62,7 @@ For each action name and value three types of counts are tracked.
 
 ```json
 {
-`	"pt": {
+	"pt": {
 		"total": 1,
 		"years": {
 			"2026": {

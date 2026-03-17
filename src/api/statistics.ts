@@ -30,9 +30,11 @@ app.post('/', async (c) => {
 	const db = getDb(c.env.DB);
 	const data = await c.req.json();
 
-	await updateStatistic(db, data.siteId, data.type, data.actionName, data.actionValue, data.overallCounts);
-
 	return c.json({}, 200);
+
+	// await updateStatistic(db, data.siteId, data.type, data.actionName, data.actionValue, data.overallCounts);
+
+	// return c.json({}, 200);
 });
 
 export default app;

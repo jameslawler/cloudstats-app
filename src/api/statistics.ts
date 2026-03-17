@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import { getDb } from '../db';
-import { getStatistics } from '../db/repositories/statistics';
+import { getStatistics, updateStatistic } from '../db/repositories/statistics';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -24,6 +24,15 @@ app.get('/', async (c) => {
 	const stats = await getStatistics(db, siteId);
 
 	return c.json({ stats }, 200);
+});
+
+app.post('/', async (c) => {
+	const db = getDb(c.env.DB);
+	const data = await c.req.json();
+
+	await updateStatistic(db, data.siteId, data.type, data.actionName, data.actionValue, data.overallCounts);
+
+	return c.json({}, 200);
 });
 
 export default app;

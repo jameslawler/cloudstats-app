@@ -2,7 +2,7 @@ import { DrizzleClient } from '..';
 
 import * as schema from '../schema';
 import { StatisticType } from '../../types/statistic';
-import { sql, eq } from 'drizzle-orm';
+import { sql, eq, and } from 'drizzle-orm';
 
 export const getStatistics = async (db: DrizzleClient, siteId: string) =>
 	db.select().from(schema.statistics).where(eq(schema.statistics.siteId, siteId)).all();
@@ -87,6 +87,76 @@ export const incrementStatistic = async (
 						COALESCE(json_extract(${schema.statistics.refererCounts}, ${refererCountsYearPath}), 0) + 1
 					)
 				`,
+				updatedAt: Date.now(),
+			},
+		});
+};
+
+export const updateStatistic = async (
+	db: DrizzleClient,
+	siteId: string,
+	type: StatisticType,
+	actionName: string,
+	actionValue: string,
+	overallCounts: any,
+) => {
+	const existing = await db
+		.select()
+		.from(schema.statistics)
+		.where(
+			and(
+				eq(schema.statistics.siteId, siteId),
+				eq(schema.statistics.type, type),
+				eq(schema.statistics.actionName, actionName),
+				eq(schema.statistics.actionValue, actionValue),
+			),
+		);
+
+	let existingTotal = 0;
+	let existingMarch = {};
+
+	if (existing.length === 1) {
+		const existingOverallCounts = existing[0].overallCounts;
+
+		console.log(existingOverallCounts);
+
+		existingTotal = existingOverallCounts.total;
+		existingMarch = existingOverallCounts.years['2026'].months;
+	}
+
+	console.log('total', existingTotal);
+
+	const newOverallCounts = {
+		total: existingTotal + overallCounts.total,
+		years: {
+			...(overallCounts?.years || {}),
+			['2026']: {
+				months: {
+					...(overallCounts?.years['2026']?.months || {}),
+					...existingMarch,
+				},
+			},
+		},
+	};
+
+	await db
+		.insert(schema.statistics)
+		.values({
+			id: crypto.randomUUID(),
+			siteId,
+			type,
+			actionName,
+			actionValue,
+			overallCounts,
+			countryCounts: {},
+			refererCounts: {},
+			createdAt: Date.now(),
+			updatedAt: Date.now(),
+		})
+		.onConflictDoUpdate({
+			target: [schema.statistics.siteId, schema.statistics.type, schema.statistics.actionName, schema.statistics.actionValue],
+			set: {
+				overallCounts: newOverallCounts,
 				updatedAt: Date.now(),
 			},
 		});

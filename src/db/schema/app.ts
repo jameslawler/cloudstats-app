@@ -1,5 +1,5 @@
 import { integer, sqliteTable, text, unique } from 'drizzle-orm/sqlite-core';
-import { StatisticType } from '../../types/statistic';
+import { StatisticCounts, StatisticType } from '../../types/statistic';
 
 export const statistics = sqliteTable(
 	'statistics',
@@ -9,9 +9,9 @@ export const statistics = sqliteTable(
 		type: text('type').notNull().$type<StatisticType>(),
 		actionName: text('actionName').notNull(), // download, article, blog, news, singup, login
 		actionValue: text('actionValue').notNull(), // http://www.., http://, http://
-		overallCounts: text('overallCounts', { mode: 'json' }).notNull(),
-		countryCounts: text('countryCounts', { mode: 'json' }).notNull(),
-		refererCounts: text('refererCounts', { mode: 'json' }).notNull(),
+		overallCounts: text('overallCounts', { mode: 'json' }).$type<StatisticCounts>().notNull(),
+		countryCounts: text('countryCounts', { mode: 'json' }).$type<Record<string, StatisticCounts>>().notNull(),
+		refererCounts: text('refererCounts', { mode: 'json' }).$type<Record<string, StatisticCounts>>().notNull(),
 		createdAt: integer('createdAt').notNull(),
 		updatedAt: integer('updatedAt').notNull(),
 	},

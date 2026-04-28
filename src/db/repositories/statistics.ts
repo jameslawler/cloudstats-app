@@ -7,6 +7,25 @@ import { sql, eq, and } from 'drizzle-orm';
 export const getStatistics = async (db: DrizzleClient, siteId: string) =>
 	db.select().from(schema.statistics).where(eq(schema.statistics.siteId, siteId)).all();
 
+export const getDomainStatistic = async (db: DrizzleClient, siteId: string) =>
+	db
+		.select()
+		.from(schema.statistics)
+		.where(and(eq(schema.statistics.siteId, siteId), eq(schema.statistics.type, 'visit'), eq(schema.statistics.actionName, 'domain')))
+		.limit(1);
+
+export const getTopTenStatistic = async (db: DrizzleClient, siteId: string, type: StatisticType, actionName: string) =>
+	db
+		.select()
+		.from(schema.statistics)
+		.where(and(eq(schema.statistics.siteId, siteId), eq(schema.statistics.type, type), eq(schema.statistics.actionName, actionName)))
+		.orderBy(
+			sql`
+					COALESCE(json_extract(${schema.statistics.overallCounts}, '$.total'), 0) DESC
+				`,
+		)
+		.limit(10);
+
 export const incrementStatistic = async (
 	db: DrizzleClient,
 	siteId: string,

@@ -2,10 +2,8 @@ import type { FC } from 'hono/jsx';
 import { Statistic, StatisticCounts } from '../types/statistic';
 import Layout from '../components/Layout';
 
-const calculatePageWidth = (pageVisitStatistics: Statistic[], pageStatistic: Statistic) => {
-	const maxWidthPageStatistic = pageVisitStatistics.reduce(
-		(acc, cur) => (acc = acc.overallCounts.total < cur.overallCounts.total ? cur : acc),
-	);
+const calculatePageWidth = (visitStatistics: Statistic[], pageStatistic: Statistic) => {
+	const maxWidthPageStatistic = visitStatistics.reduce((acc, cur) => (acc = acc.overallCounts.total < cur.overallCounts.total ? cur : acc));
 
 	return (pageStatistic.overallCounts.total / maxWidthPageStatistic.overallCounts.total) * 100;
 };
@@ -16,7 +14,9 @@ const calculateWidth = (statisticCounts: StatisticCounts[], statisticCount: Stat
 	return (statisticCount.total / maxWidthStatisticCount.total) * 100;
 };
 
-const Dashboard: FC<{ siteId: string; domainStatistic: Statistic; pageVisitStatistics: Statistic[] }> = (props) => {
+const Dashboard: FC<{ siteId: string; domainStatistic: Statistic; visitStatistics: Statistic[]; eventStatistics: Statistic[] }> = (
+	props,
+) => {
 	const domainTopCountries = Object.entries(props.domainStatistic.countryCounts)
 		.sort(([, aValue], [, bValue]) => bValue.total - aValue.total)
 		.slice(0, 10);
@@ -105,17 +105,17 @@ const Dashboard: FC<{ siteId: string; domainStatistic: Statistic; pageVisitStati
 				<div class="w-full flex flex-row gap-4">
 					<div class="w-full bg-white p-2 rounded-2xl shadow-sm border border-gray-100">
 						<div class="p-3 border-b border-gray-100">
-							<h2 class="text-md text-gray-400">Page</h2>
+							<h2 class="text-md text-gray-400">Visits</h2>
 						</div>
 
 						<div class="divide-y divide-gray-100">
-							{props.pageVisitStatistics.map((item, i) => (
+							{props.visitStatistics.map((item, i) => (
 								<div class="p-1 hover:bg-gray-50 transition">
 									<div class="flex items-center justify-between">
 										<div class="flex flex-1 w-full h-full relative p-1">
 											<div
 												class="absolute top-0 left-0 h-full bg-amber-200/50"
-												style={`width: ${calculatePageWidth(props.pageVisitStatistics, item)}%;`}
+												style={`width: ${calculatePageWidth(props.visitStatistics, item)}%;`}
 											></div>
 											<div class="text-sm text-gray-500 truncate max-w-[300px] relative">{item.actionValue}</div>
 										</div>
@@ -131,17 +131,17 @@ const Dashboard: FC<{ siteId: string; domainStatistic: Statistic; pageVisitStati
 
 					<div class="w-full bg-white p-2 rounded-2xl shadow-sm border border-gray-100">
 						<div class="p-3 border-b border-gray-100">
-							<h2 class="text-md text-gray-400">Page</h2>
+							<h2 class="text-md text-gray-400">Events</h2>
 						</div>
 
 						<div class="divide-y divide-gray-100">
-							{props.pageVisitStatistics.map((item, i) => (
+							{props.eventStatistics.map((item, i) => (
 								<div class="p-1 hover:bg-gray-50 transition">
 									<div class="flex items-center justify-between">
 										<div class="flex flex-1 w-full h-full relative p-1">
 											<div
 												class="absolute top-0 left-0 h-full bg-amber-200/50"
-												style={`width: ${calculatePageWidth(props.pageVisitStatistics, item)}%;`}
+												style={`width: ${calculatePageWidth(props.eventStatistics, item)}%;`}
 											></div>
 											<div class="text-sm text-gray-500 truncate max-w-[300px] relative">{item.actionValue}</div>
 										</div>

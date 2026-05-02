@@ -10,7 +10,8 @@
 		"nodejs_compat"
 	],
 	"assets": {
-		"directory": "./assets"
+		"binding": "ASSETS",
+		"directory": "./public"
 	},
 	"d1_databases": [
 		{

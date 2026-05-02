@@ -2,7 +2,7 @@ import { DrizzleClient } from '..';
 
 import * as schema from '../schema';
 import { StatisticType } from '../../types/statistic';
-import { sql, eq, and } from 'drizzle-orm';
+import { sql, eq, and, ne } from 'drizzle-orm';
 
 export const getStatistics = async (db: DrizzleClient, siteId: string) =>
 	db.select().from(schema.statistics).where(eq(schema.statistics.siteId, siteId)).all();
@@ -14,11 +14,11 @@ export const getDomainStatistic = async (db: DrizzleClient, siteId: string) =>
 		.where(and(eq(schema.statistics.siteId, siteId), eq(schema.statistics.type, 'visit'), eq(schema.statistics.actionName, 'domain')))
 		.limit(1);
 
-export const getTopTenStatistic = async (db: DrizzleClient, siteId: string, type: StatisticType, actionName: string) =>
+export const getTopTenStatistic = async (db: DrizzleClient, siteId: string, type: StatisticType) =>
 	db
 		.select()
 		.from(schema.statistics)
-		.where(and(eq(schema.statistics.siteId, siteId), eq(schema.statistics.type, type), eq(schema.statistics.actionName, actionName)))
+		.where(and(eq(schema.statistics.siteId, siteId), eq(schema.statistics.type, type), ne(schema.statistics.actionName, 'domain')))
 		.orderBy(
 			sql`
 					COALESCE(json_extract(${schema.statistics.overallCounts}, '$.total'), 0) DESC

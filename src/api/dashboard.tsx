@@ -22,10 +22,16 @@ app.get('/', async (c) => {
 	const db = getDb(c.env.DB);
 	const siteId = getSiteId(c.req.url);
 
-	const stats = await getDomainStatistic(db, siteId);
-	const topTen = await getTopTenStatistic(db, siteId, 'visit', 'article');
+	const domainStatistics = await getDomainStatistic(db, siteId);
+	const pageVisitStatistics = await getTopTenStatistic(db, siteId, 'visit');
 
-	return c.html(<Dashboard domainTotalVisits={stats[0]?.overallCounts?.total ?? 0} topTen={topTen} />);
+	if (domainStatistics.length === 0) {
+		return c.html('<div>Error</div>');
+	}
+
+	return c.html(
+		'<!doctype html>' + <Dashboard siteId={siteId} domainStatistic={domainStatistics[0]} pageVisitStatistics={pageVisitStatistics} />,
+	);
 });
 
 export default app;

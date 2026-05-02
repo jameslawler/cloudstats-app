@@ -18,11 +18,11 @@ const calculateWidth = (statisticCounts: StatisticCounts[], statisticCount: Stat
 
 const Dashboard: FC<{ siteId: string; domainStatistic: Statistic; pageVisitStatistics: Statistic[] }> = (props) => {
 	const domainTopCountries = Object.entries(props.domainStatistic.countryCounts)
-		.sort(([, aValue], [, bValue]) => aValue.total - bValue.total)
+		.sort(([, aValue], [, bValue]) => bValue.total - aValue.total)
 		.slice(0, 10);
 
 	const domainTopReferers = Object.entries(props.domainStatistic.refererCounts)
-		.sort(([, aValue], [, bValue]) => aValue.total - bValue.total)
+		.sort(([, aValue], [, bValue]) => bValue.total - aValue.total)
 		.slice(0, 10);
 
 	return (

@@ -4,6 +4,12 @@ import * as schema from '../schema';
 import { StatisticType } from '../../types/statistic';
 import { sql, eq, and, ne } from 'drizzle-orm';
 
+export type StatisticsRange = {
+	type: 'overall' | 'date';
+	year?: string;
+	month?: string;
+};
+
 export const getStatistics = async (db: DrizzleClient, siteId: string) =>
 	db.select().from(schema.statistics).where(eq(schema.statistics.siteId, siteId)).all();
 
@@ -14,17 +20,23 @@ export const getDomainStatistic = async (db: DrizzleClient, siteId: string) =>
 		.where(and(eq(schema.statistics.siteId, siteId), eq(schema.statistics.type, 'visit'), eq(schema.statistics.actionName, 'domain')))
 		.limit(1);
 
-export const getTopTenStatistic = async (db: DrizzleClient, siteId: string, type: StatisticType) =>
-	db
+export const getTopTenStatistic = async (db: DrizzleClient, siteId: string, type: StatisticType, range: StatisticsRange) => {
+	const valuePath = range.type === 'overall' ? '$.total' : `$.years.${range.year}.months.${range.month}`;
+
+	return db
 		.select()
 		.from(schema.statistics)
-		.where(and(eq(schema.statistics.siteId, siteId), eq(schema.statistics.type, type), ne(schema.statistics.actionName, 'domain')))
-		.orderBy(
-			sql`
-					COALESCE(json_extract(${schema.statistics.overallCounts}, '$.total'), 0) DESC
-				`,
+		.where(
+			and(
+				eq(schema.statistics.siteId, siteId),
+				eq(schema.statistics.type, type),
+				ne(schema.statistics.actionName, 'domain'),
+				sql`COALESCE(json_extract(${schema.statistics.overallCounts}, ${valuePath}), 0) > 0`,
+			),
 		)
+		.orderBy(sql`COALESCE(json_extract(${schema.statistics.overallCounts}, ${valuePath}), 0) DESC`)
 		.limit(10);
+};
 
 export const incrementStatistic = async (
 	db: DrizzleClient,

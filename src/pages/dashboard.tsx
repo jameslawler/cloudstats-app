@@ -1,28 +1,48 @@
 import type { FC } from 'hono/jsx';
 import { Statistic, StatisticCounts } from '../types/statistic';
 import Layout from '../components/Layout';
+import { StatisticsRange } from '../db/repositories/statistics';
 
-const calculatePageWidth = (visitStatistics: Statistic[], pageStatistic: Statistic) => {
-	const maxWidthPageStatistic = visitStatistics.reduce((acc, cur) => (acc = acc.overallCounts.total < cur.overallCounts.total ? cur : acc));
+const getStatisticValue = (statisticsRange: StatisticsRange, statistic: StatisticCounts) =>
+	statisticsRange.type === 'overall' ? statistic.total : statistic.years[statisticsRange.year!].months[statisticsRange.month!];
 
-	return (pageStatistic.overallCounts.total / maxWidthPageStatistic.overallCounts.total) * 100;
+const calculatePageWidth = (statisticsRange: StatisticsRange, visitStatistics: Statistic[], pageStatistic: Statistic) => {
+	const maxWidthPageStatistic = visitStatistics.reduce(
+		(acc, cur) =>
+			(acc = getStatisticValue(statisticsRange, acc.overallCounts) < getStatisticValue(statisticsRange, cur.overallCounts) ? cur : acc),
+	);
+
+	return (
+		(getStatisticValue(statisticsRange, pageStatistic.overallCounts) /
+			getStatisticValue(statisticsRange, maxWidthPageStatistic.overallCounts)) *
+		100
+	);
 };
 
-const calculateWidth = (statisticCounts: StatisticCounts[], statisticCount: StatisticCounts) => {
-	const maxWidthStatisticCount = statisticCounts.reduce((acc, cur) => (acc = acc.total < cur.total ? cur : acc));
+const calculateWidth = (statisticsRange: StatisticsRange, statisticCounts: StatisticCounts[], statisticCount: StatisticCounts) => {
+	const maxWidthStatisticCount = statisticCounts.reduce(
+		(acc, cur) => (acc = getStatisticValue(statisticsRange, acc) < getStatisticValue(statisticsRange, cur) ? cur : acc),
+	);
 
-	return (statisticCount.total / maxWidthStatisticCount.total) * 100;
+	return (getStatisticValue(statisticsRange, statisticCount) / getStatisticValue(statisticsRange, maxWidthStatisticCount)) * 100;
 };
 
-const Dashboard: FC<{ siteId: string; domainStatistic: Statistic; visitStatistics: Statistic[]; eventStatistics: Statistic[] }> = (
-	props,
-) => {
+const Dashboard: FC<{
+	siteId: string;
+	domainStatistic: Statistic;
+	visitStatistics: Statistic[];
+	eventStatistics: Statistic[];
+	statisticsRange: StatisticsRange;
+}> = (props) => {
+	const statisticsRange = props.statisticsRange;
 	const domainTopCountries = Object.entries(props.domainStatistic.countryCounts)
-		.sort(([, aValue], [, bValue]) => bValue.total - aValue.total)
+		.sort(([, aValue], [, bValue]) => getStatisticValue(statisticsRange, bValue) - getStatisticValue(statisticsRange, aValue))
+		.filter(([, aValue]) => getStatisticValue(statisticsRange, aValue) > 0)
 		.slice(0, 10);
 
 	const domainTopReferers = Object.entries(props.domainStatistic.refererCounts)
-		.sort(([, aValue], [, bValue]) => bValue.total - aValue.total)
+		.sort(([, aValue], [, bValue]) => getStatisticValue(statisticsRange, bValue) - getStatisticValue(statisticsRange, aValue))
+		.filter(([, aValue]) => getStatisticValue(statisticsRange, aValue) > 0)
 		.slice(0, 10);
 
 	return (
@@ -37,7 +57,7 @@ const Dashboard: FC<{ siteId: string; domainStatistic: Statistic; visitStatistic
 					<div class="w-full bg-white p-2 rounded-2xl shadow-sm border border-gray-100">
 						<div class="p-3 border-b border-gray-100">
 							<h2 class="text-md text-gray-400">Total Visits</h2>
-							<div>{props.domainStatistic.overallCounts.total}</div>
+							<div>{getStatisticValue(statisticsRange, props.domainStatistic.overallCounts)}</div>
 						</div>
 					</div>
 				</div>
@@ -56,6 +76,7 @@ const Dashboard: FC<{ siteId: string; domainStatistic: Statistic; visitStatistic
 											<div
 												class="absolute top-0 left-0 h-full bg-amber-200/50"
 												style={`width: ${calculateWidth(
+													statisticsRange,
 													domainTopCountries.map(([, value]) => value),
 													value,
 												)}%;`}
@@ -67,7 +88,7 @@ const Dashboard: FC<{ siteId: string; domainStatistic: Statistic; visitStatistic
 										</div>
 
 										<div class="w-20 text-right">
-											<div class="text-lg font-semibold text-gray-900 mr-2">{value.total}</div>
+											<div class="text-lg font-semibold text-gray-900 mr-2">{getStatisticValue(statisticsRange, value)}</div>
 										</div>
 									</div>
 								</div>
@@ -88,6 +109,7 @@ const Dashboard: FC<{ siteId: string; domainStatistic: Statistic; visitStatistic
 											<div
 												class="absolute top-0 left-0 h-full bg-amber-200/50"
 												style={`width: ${calculateWidth(
+													statisticsRange,
 													domainTopReferers.map(([, value]) => value),
 													value,
 												)}%;`}
@@ -96,7 +118,7 @@ const Dashboard: FC<{ siteId: string; domainStatistic: Statistic; visitStatistic
 										</div>
 
 										<div class="w-20 text-right">
-											<div class="text-lg font-semibold text-gray-900 mr-2">{value.total}</div>
+											<div class="text-lg font-semibold text-gray-900 mr-2">{getStatisticValue(statisticsRange, value)}</div>
 										</div>
 									</div>
 								</div>
@@ -118,13 +140,13 @@ const Dashboard: FC<{ siteId: string; domainStatistic: Statistic; visitStatistic
 										<div class="flex flex-1 w-full h-full relative p-1">
 											<div
 												class="absolute top-0 left-0 h-full bg-amber-200/50"
-												style={`width: ${calculatePageWidth(props.visitStatistics, item)}%;`}
+												style={`width: ${calculatePageWidth(statisticsRange, props.visitStatistics, item)}%;`}
 											></div>
 											<div class="text-sm text-gray-500 truncate max-w-[300px] relative">{item.actionValue}</div>
 										</div>
 
 										<div class="w-20 text-right">
-											<div class="text-lg font-semibold text-gray-900 mr-2">{item.overallCounts.total}</div>
+											<div class="text-lg font-semibold text-gray-900 mr-2">{getStatisticValue(statisticsRange, item.overallCounts)}</div>
 										</div>
 									</div>
 								</div>
@@ -144,13 +166,13 @@ const Dashboard: FC<{ siteId: string; domainStatistic: Statistic; visitStatistic
 										<div class="flex flex-1 w-full h-full relative p-1">
 											<div
 												class="absolute top-0 left-0 h-full bg-amber-200/50"
-												style={`width: ${calculatePageWidth(props.eventStatistics, item)}%;`}
+												style={`width: ${calculatePageWidth(statisticsRange, props.eventStatistics, item)}%;`}
 											></div>
 											<div class="text-sm text-gray-500 truncate max-w-[300px] relative">{item.actionValue}</div>
 										</div>
 
 										<div class="w-20 text-right">
-											<div class="text-lg font-semibold text-gray-900 mr-2">{item.overallCounts.total}</div>
+											<div class="text-lg font-semibold text-gray-900 mr-2">{getStatisticValue(statisticsRange, item.overallCounts)}</div>
 										</div>
 									</div>
 								</div>

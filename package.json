@@ -6,6 +6,7 @@
 		"deploy": "wrangler deploy",
 		"dev": "concurrently \"npm run start\" \"npm run dev:css\"",
 		"dev:css": "npx @tailwindcss/cli -i ./src/index.css -o ./public/index.css --watch",
+		"copy:flags": "cp ./node_modules/flag-icons/css/flag-icons.min.css ./public/flag-icons.min.css && cp -r ./node_modules/flag-icons/flags/1x1 ./public/flags",
 		"start": "wrangler dev",
 		"test": "vitest",
 		"cf-typegen": "wrangler types",
@@ -23,6 +24,7 @@
 	"dependencies": {
 		"@tailwindcss/cli": "4.2.4",
 		"drizzle-orm": "0.45.1",
+		"flag-icons": "7.5.0",
 		"hono": "4.12.3",
 		"tailwindcss": "4.2.4"
 	}

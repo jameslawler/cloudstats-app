@@ -60,7 +60,10 @@ const Dashboard: FC<{ siteId: string; domainStatistic: Statistic; visitStatistic
 													value,
 												)}%;`}
 											></div>
-											<div class="text-sm text-gray-500 truncate max-w-[300px] relative">{key}</div>
+											<div class="text-sm text-gray-500 truncate max-w-[300px] relative">
+												<span class={`fi fi-${key.toLocaleLowerCase()} fis`}></span>
+												<span class="ml-2">{key}</span>
+											</div>
 										</div>
 
 										<div class="w-20 text-right">

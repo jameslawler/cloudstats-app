@@ -33,6 +33,7 @@ const Dashboard: FC<{
 	visitStatistics: Statistic[];
 	eventStatistics: Statistic[];
 	statisticsRange: StatisticsRange;
+	lastUpdated: Date;
 }> = (props) => {
 	const statisticsRange = props.statisticsRange;
 	const domainTopCountries = Object.entries(props.domainStatistic.countryCounts)
@@ -51,6 +52,7 @@ const Dashboard: FC<{
 				<div class="mb-6">
 					<h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
 					<p class="text-gray-500">{props.siteId}</p>
+					<p class="text-sm">{props.lastUpdated.toUTCString()}</p>
 				</div>
 
 				<div class="w-full flex flex-row gap-4">

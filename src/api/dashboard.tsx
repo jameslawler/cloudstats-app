@@ -25,6 +25,15 @@ app.get('/', async (c) => {
 	const month = c.req.query('m');
 	const isOverallRange = !year && !month;
 
+	const cache = caches.default;
+	const cacheKey = new Request(c.req.url, c.req);
+
+	const cached = await cache.match(cacheKey);
+
+	if (cached) {
+		return cached;
+	}
+
 	const statisticsRange: StatisticsRange = isOverallRange ? { type: 'overall' } : { type: 'date', year, month };
 
 	const domainStatistics = await getDomainStatistic(db, siteId);
@@ -35,7 +44,9 @@ app.get('/', async (c) => {
 		return c.html('<div>Error</div>');
 	}
 
-	return c.html(
+	const lastUpdated = new Date();
+
+	const response = c.html(
 		'<!doctype html>' +
 		(
 			<Dashboard
@@ -44,9 +55,15 @@ app.get('/', async (c) => {
 				visitStatistics={visitStatistics}
 				eventStatistics={eventStatistics}
 				statisticsRange={statisticsRange}
+				lastUpdated={lastUpdated}
 			/>
 		),
 	);
+
+	response.headers.append('Cache-Control', 'public, max-age=300');
+	await cache.put(cacheKey, response.clone());
+
+	return response;
 });
 
 export default app;
